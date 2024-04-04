@@ -3,6 +3,7 @@
   "Values": {
     "AzureWebJobsStorage": "AzureWebJobsStorageConnectionString",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-    "AzureSqlDatabase": "AzureSqlDatabaseConnectionString"
+    //"AzureSqlDatabase": "AzureSqlDatabaseConnectionString",
+    "AzureSqlDatabase": "Server=S-Hesam-S;Database=AzureDotNetMasterySQL;Trusted_Connection=True;MultipleActiveResultSets=true"
   }
 }
