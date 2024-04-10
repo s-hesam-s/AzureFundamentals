@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpookyLogic", "AzureSp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureLogicAppExample", "AzureLogicAppExample", "{30CB6075-56E4-4E8B-A58B-0D86457581D5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureRedisCache", "AzureRedisCache", "{1FC2B5A1-9317-4121-99AC-A25EC94F4103}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisCache", "RedisCache\RedisCache.csproj", "{D1431883-AAC4-4F3F-B766-2C7D82C2E07E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,10 @@ Global
 		{E98032DD-B887-49F4-A940-6FF7A0E14B09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E98032DD-B887-49F4-A940-6FF7A0E14B09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E98032DD-B887-49F4-A940-6FF7A0E14B09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1431883-AAC4-4F3F-B766-2C7D82C2E07E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1431883-AAC4-4F3F-B766-2C7D82C2E07E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1431883-AAC4-4F3F-B766-2C7D82C2E07E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1431883-AAC4-4F3F-B766-2C7D82C2E07E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +56,7 @@ Global
 		{722890F2-A86F-4998-8C26-A68AE9E0BB09} = {42D0A859-184A-42DB-A143-D9B50B636849}
 		{B56529B1-5D12-4A2E-95C9-F271E72BA95D} = {42D0A859-184A-42DB-A143-D9B50B636849}
 		{E98032DD-B887-49F4-A940-6FF7A0E14B09} = {30CB6075-56E4-4E8B-A58B-0D86457581D5}
+		{D1431883-AAC4-4F3F-B766-2C7D82C2E07E} = {1FC2B5A1-9317-4121-99AC-A25EC94F4103}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16032F21-9749-4033-ABEF-B2FE870419A9}
