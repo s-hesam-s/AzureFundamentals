@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using RedisCache.Data;
 using RedisCache.Models;
 using System.Diagnostics;
 
@@ -8,14 +9,27 @@ namespace RedisCache.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        private readonly ApplicationDbContext _db;
+        public HomeController(ILogger<HomeController> logger,
+            ApplicationDbContext db)
         {
             _logger = logger;
+            _db = db;
         }
 
         public IActionResult Index()
         {
-            return View();
+            List<Category> categoryList = new();
+            var cachedCategory = "";
+            if (!string.IsNullOrEmpty(cachedCategory))
+            {
+                //cache
+            }
+            else
+            {
+                categoryList = _db.Categories.ToList();
+            }
+            return View(categoryList);
         }
 
         public IActionResult Privacy()
