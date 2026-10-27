@@ -77,3 +77,9 @@ There is no automated behavior-test suite in this repository. A successful confi
 ## Project scope and reuse
 
 This is an educational repository. The implementation notes describe the code in this repository; they do not claim a deployed commercial service or measured production results. Third-party libraries and assets retain their own terms. No project-wide license is currently declared.
+
+## Continuous integration
+
+GitHub Actions restores and builds all samples in `AzureFundamentals.sln` on Windows. The runner installs .NET 8 and .NET 6 SDKs to compile the existing targets, including the legacy in-process Functions example; this does not upgrade its target or establish current Azure deployment support. It also runs `scripts/Test-PublicConfiguration.ps1` without printing configured values. No automated application test suite exists in this repository, so the workflow does not claim application-test coverage. The application hosts, database migrations/seeds, cloud integrations and payments are not started by CI.
+
+The [CI workflow](.github/workflows/ci.yml) runs for pull requests and pushes to `master`, and can be started manually. It uses read-only repository permissions and does not deploy the project.
