@@ -84,3 +84,7 @@ The [CI workflow](.github/workflows/ci.yml) uses .NET 10 to restore and build th
 This is an educational repository. It does not claim a deployed commercial service or measured production results. Third-party libraries and assets retain their own terms; preserve SkiaSharp and bundled native-library notices when distributing it. No project-wide license is currently declared.
 
 [Local verification snapshot](docs/VERIFICATION.md) records the build, isolated-test and dependency-audit boundaries.
+
+## Maintenance checks
+
+The existing CI also runs weekly on Monday and checks tracked Markdown file destinations with `scripts/check_doc_links.py`. Its negative tests cover moved documents, missing picture variants, paths outside the repository and untracked local drafts. External URLs and heading fragments are intentionally outside this offline file check. Scheduled runs do not deploy or start original application hosts.
