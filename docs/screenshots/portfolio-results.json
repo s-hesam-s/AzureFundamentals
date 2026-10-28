@@ -1,0 +1,19 @@
+{
+  "implementation": "ImageThumbnail.Resize",
+  "input": {
+    "width": 900,
+    "height": 600,
+    "format": "PNG",
+    "bytes": 11738
+  },
+  "output": {
+    "width": 300,
+    "height": 200,
+    "format": "Png",
+    "bytes": 2557
+  },
+  "invalidTiff": "Only PNG and JPEG images are supported.",
+  "oversized": "Image exceeds the 8 MiB input limit.",
+  "functionsHostStarted": false,
+  "cloudCalls": 0
+}

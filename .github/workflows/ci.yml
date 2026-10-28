@@ -42,3 +42,7 @@ jobs:
 
       - name: Test image processing without Azure resources
         run: dotnet test tests/Image.Tests/Image.Tests.csproj --configuration Release
+      - name: Restore isolated preview
+        run: dotnet restore tools/Preview/Preview.csproj
+      - name: Build isolated preview
+        run: dotnet build tools/Preview/Preview.csproj --configuration Release --no-restore
