@@ -1,28 +1,15 @@
-﻿using AzureTangyFunc.Data;
-using AzureTangyFunc;
-using Microsoft.Azure.WebJobs.Hosting;
-using Microsoft.Azure.WebJobs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+using AzureTangyFunc.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-[assembly: WebJobsStartup(typeof(Startup))]
-namespace AzureTangyFunc
+namespace AzureTangyFunc;
+
+public static class Startup
 {
-    public class Startup : IWebJobsStartup
+    public static void Configure(IServiceCollection services, IConfiguration configuration)
     {
-        public void Configure(IWebJobsBuilder builder)
-        {
-            string connectionString = Environment.GetEnvironmentVariable("AzureSqlDatabase");
-
-            builder.Services.AddDbContext<AzureTangyDbContext>(
-                options => options.UseSqlServer(connectionString));
-
-            builder.Services.BuildServiceProvider();
-        }
+        services.AddDbContext<AzureTangyDbContext>(options =>
+            options.UseSqlServer(configuration["AzureSqlDatabase"]));
     }
 }

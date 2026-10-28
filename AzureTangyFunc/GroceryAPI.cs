@@ -1,9 +1,8 @@
+using Microsoft.Azure.Functions.Worker;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -23,11 +22,12 @@ namespace AzureTangyFunc
         }
 
 
-        [FunctionName("CreateGrocery")]
+        [Function("CreateGrocery")]
         public async Task<IActionResult> CreateGrocery(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "GroceryList")] HttpRequest req,
-            ILogger log)
+            FunctionContext context)
         {
+            var log = context.GetLogger("GroceryAPI");
             log.LogInformation("Creating Grocery List Item.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -44,21 +44,23 @@ namespace AzureTangyFunc
             return new OkObjectResult(groceryItem);
         }
 
-        [FunctionName("GetAllGrocery")]
+        [Function("GetAllGrocery")]
         public async Task<IActionResult> GetAllGrocery(
            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GroceryList")] HttpRequest req,
-           ILogger log)
+           FunctionContext context)
         {
+            var log = context.GetLogger("GroceryAPI");
             log.LogInformation("Getting all Grocery List Item.");
 
             return new OkObjectResult(_db.GroceryItems.ToList());
         }
 
-        [FunctionName("GetGroceryById")]
+        [Function("GetGroceryById")]
         public async Task<IActionResult> GetGroceryById(
          [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GroceryList/{id}")] HttpRequest req,
-         ILogger log, string id)
+         FunctionContext context, string id)
         {
+            var log = context.GetLogger("GroceryAPI");
             log.LogInformation("Getting Grocery List Item by ID.");
 
             var item = _db.GroceryItems.FirstOrDefault(u => u.Id == id);
@@ -71,11 +73,12 @@ namespace AzureTangyFunc
         }
 
 
-        [FunctionName("UpdateGrocery")]
+        [Function("UpdateGrocery")]
         public async Task<IActionResult> UpdateGrocery(
            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "GroceryList/{id}")] HttpRequest req,
-           ILogger log, string id)
+           FunctionContext context, string id)
         {
+            var log = context.GetLogger("GroceryAPI");
             log.LogInformation("Updatind Grocery List Item.");
 
             var item = _db.GroceryItems.FirstOrDefault(u => u.Id == id);
@@ -97,11 +100,12 @@ namespace AzureTangyFunc
             return new OkObjectResult(item);
         }
 
-        [FunctionName("DeleteGrocery")]
+        [Function("DeleteGrocery")]
         public async Task<IActionResult> DeleteGrocery(
            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "GroceryList/{id}")] HttpRequest req,
-           ILogger log, string id)
+           FunctionContext context, string id)
         {
+            var log = context.GetLogger("GroceryAPI");
             log.LogInformation("Delete Grocery List Item.");
 
             var item = _db.GroceryItems.FirstOrDefault(u => u.Id == id);

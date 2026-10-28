@@ -1,85 +1,78 @@
 # Azure Fundamentals — Learning Samples
 
-A collection of educational .NET web and Azure Functions samples for storage, triggers, image processing, email and caching.
+Educational .NET 10 web and Azure Functions samples for storage, triggers, image processing, email and caching.
 
-## Repository map
+## Sample map
 
 | Project | Focus | Target |
 |---|---|---|
-| [AzureBlobProject](AzureBlobProject) | Blob/container web operations | .NET 8 |
-| [AzureSpookyLogic](AzureSpookyLogic) | Storage-backed web workflow | .NET 8 |
-| [RedisCache](RedisCache) | MVC data access and Redis caching | .NET 8 |
-| [AzureFunctionTangyWeb](AzureFunctionTangyWeb) | Web client for the function/storage exercises | .NET 8 |
-| [AzureTangyFunc](AzureTangyFunc) | HTTP, queue/blob, image and email trigger examples | .NET 6, Functions v4 in-process |
+| [AzureBlobProject](AzureBlobProject) | Blob/container web operations | .NET 10 |
+| [AzureSpookyLogic](AzureSpookyLogic) | Storage-backed web workflow | .NET 10 |
+| [RedisCache](RedisCache) | MVC data access and Redis caching | .NET 10 |
+| [AzureFunctionTangyWeb](AzureFunctionTangyWeb) | Function/storage web client | .NET 10 |
+| [AzureTangyFunc](AzureTangyFunc) | HTTP, queue, blob and timer exercises | .NET 10, Functions v4 isolated worker |
 
-These projects are separate exercises. Start with one sample and configure only the resources it uses.
+These are separate learning exercises. Configure only the resources required by the sample you run. See [runtime and migration notes](docs/RUNTIME.md) for the isolated-worker migration and dependency policy.
 
-## Requirements and configuration
+## Build and isolated checks
 
-The web projects target .NET 8. The Functions project is a legacy .NET 6 in-process example with Microsoft.NET.Sdk.Functions 4.1.1. .NET 6 is out of support; use a compatible local learning environment or plan a separately tested upgrade before treating it as an active deployment target. Current Azure host compatibility is not established by this repository.
-
-Read [SECURITY-SETUP.md](SECURITY-SETUP.md) before configuring credentials. Tracked secret values are intentionally empty. Use environment variables for your own development resources; do not restore old values from Git history.
-
-Storage samples read `BlobConnection`. RedisCache reads `ConnectionStrings:DefaultConnection` and `ConnectionStrings:AzureRedisConnection` (environment variable `ConnectionStrings__AzureRedisConnection`). AzureFunctionTangyWeb reads `AzureWebJobsStorage`. Set your own development values using the configuration names documented in the source; the empty tracked values do not provision resources.
-
-For AzureTangyFunc, inspect [local.settings.json](AzureTangyFunc/local.settings.json), [host.json](AzureTangyFunc/host.json) and [Startup.cs](AzureTangyFunc/Startup.cs). Functions `Values` settings are exposed as environment keys such as `AzureWebJobsStorage` and `AzureSqlDatabase`; they are not an ASP.NET Core `Values__...` section. Review SQL, storage and email targets before invoking a function: triggers can write to those resources.
-
-## Build
+Install the latest supported .NET 10 SDK/runtime patch. NuGet feeds and advisory data must be reachable.
 
 ```powershell
 git clone https://github.com/s-hesam-s/AzureFundamentals.git
 cd AzureFundamentals
+dotnet restore AzureFundamentals.sln
+dotnet restore AzureTangyFunc/AzureTangyFunc.csproj
+dotnet build AzureFundamentals.sln --configuration Release --no-restore
+dotnet test tests/Image.Tests/Image.Tests.csproj --configuration Release
+pwsh -File scripts/Test-PublicConfiguration.ps1
 ```
 
-Build the selected .NET 8 web sample first:
+The separate Functions restore is required by Azure.Functions.Sdk to generate its extension project. Image tests process in-memory PNG/JPEG data with SkiaSharp and inspect generated metadata for all ten functions and their output bindings. They do not start the host, execute timers, connect to SQL/storage, or send email.
 
-```powershell
-dotnet restore AzureBlobProject/AzureBlobProject.csproj
-dotnet build AzureBlobProject/AzureBlobProject.csproj --no-restore
-```
+## Configuration
 
-[AzureFundamentals.sln](AzureFundamentals.sln) contains the full collection, including the legacy Functions target. A solution-wide build therefore has additional runtime/tooling requirements.
+Read [SECURITY-SETUP.md](SECURITY-SETUP.md). Tracked credential fields are empty. Supply your own development values through the documented configuration keys; do not recover old values from history.
 
-## Run a web sample
+- Storage web samples read `BlobConnection`; AzureFunctionTangyWeb reads `AzureWebJobsStorage`.
+- RedisCache reads `ConnectionStrings:DefaultConnection` and `ConnectionStrings:AzureRedisConnection`.
+- Functions read environment keys including `AzureWebJobsStorage`, `AzureSqlDatabase` and `CustomSendGridKeyAppSettingName`. They are not an ASP.NET Core `Values__...` section.
+- [local.settings.json](AzureTangyFunc/local.settings.json) selects `dotnet-isolated`. Supply only isolated development resources before starting Functions Core Tools v4.
 
-After supplying your own development storage settings:
+HTTP functions retain their function names and GroceryList routes. Queue bindings use lowercase `salesrequestinbound`. Thumbnail processing accepts PNG/JPEG only, with an 8 MiB encoded-input limit and a 16 million pixel limit. TIFF is rejected. See [ImageThumbnail.cs](AzureTangyFunc/ImageThumbnail.cs).
+
+## Run a configured sample
+
+Web sample HTTPS profiles:
+
+| Project | Address |
+|---|---|
+| AzureBlobProject | `https://localhost:7033` |
+| AzureSpookyLogic | `https://localhost:7294` |
+| RedisCache | `https://localhost:7186` |
+| AzureFunctionTangyWeb | `https://localhost:7115` |
+
+After reviewing and preparing the development resources:
 
 ```powershell
 dotnet run --project AzureBlobProject/AzureBlobProject.csproj --launch-profile https
 ```
 
-The checked-in HTTPS addresses are:
-
-- AzureBlobProject: `https://localhost:7033`.
-- AzureSpookyLogic: `https://localhost:7294`.
-- RedisCache: `https://localhost:7186`.
-- AzureFunctionTangyWeb: `https://localhost:7115`.
-
-Use the corresponding project path and its `https` launch profile. Data-oriented samples need their own prepared development SQL schema.
-
-For the legacy Functions sample, install compatible Azure Functions Core Tools v4 and the required .NET runtime, configure the local resources and then run from that project directory:
+For Functions, use current compatible Azure Functions Core Tools v4:
 
 ```powershell
 cd AzureTangyFunc
 func start
 ```
 
-Use the function URLs printed by the host. Do not invoke write/trigger endpoints against a shared or production resource.
-
-## Verification
-
-```powershell
-pwsh -File scripts/Test-PublicConfiguration.ps1
-```
-
-There is no automated behavior-test suite in this repository. A successful configuration check only checks tracked credential fields; it does not validate resource provisioning, function compatibility or connectivity. Full startup and cloud workflows require separate testing with your own development resources.
-
-## Project scope and reuse
-
-This is an educational repository. The implementation notes describe the code in this repository; they do not claim a deployed commercial service or measured production results. Third-party libraries and assets retain their own terms. No project-wide license is currently declared.
+Starting the Functions host activates queue/blob/timer listeners, and invoking functions can write to SQL/storage and send email. This is not a dependency-free preview. A build does not provision resources or validate deployment. Actual Azure startup, Linux native execution and cloud integrations have not been verified here. Review current hosting-plan support before deploying .NET 10 to Azure.
 
 ## Continuous integration
 
-GitHub Actions restores and builds all samples in `AzureFundamentals.sln` on Windows. The runner installs .NET 8 and .NET 6 SDKs to compile the existing targets, including the legacy in-process Functions example; this does not upgrade its target or establish current Azure deployment support. It also runs `scripts/Test-PublicConfiguration.ps1` without printing configured values. No automated application test suite exists in this repository, so the workflow does not claim application-test coverage. The application hosts, database migrations/seeds, cloud integrations and payments are not started by CI.
+The [CI workflow](.github/workflows/ci.yml) uses .NET 10 to restore and build the solution in Release mode, run image/metadata regressions and check public configuration. NuGet audit includes transitive dependencies and fails on known advisories or unavailable audit data. CI does not start application hosts or connect to development/cloud resources.
 
-The [CI workflow](.github/workflows/ci.yml) runs for pull requests and pushes to `master`, and can be started manually. It uses read-only repository permissions and does not deploy the project.
+## Project scope and reuse
+
+This is an educational repository. It does not claim a deployed commercial service or measured production results. Third-party libraries and assets retain their own terms; preserve SkiaSharp and bundled native-library notices when distributing it. No project-wide license is currently declared.
+
+[Local verification snapshot](docs/VERIFICATION.md) records the build, isolated-test and dependency-audit boundaries.

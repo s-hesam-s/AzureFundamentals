@@ -1,9 +1,8 @@
+using Microsoft.Azure.Functions.Worker;
 using System;
 using AzureTangyFunc.Data;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using SendGrid.Helpers.Mail;
 using AzureTangyFunc.Models;
@@ -19,10 +18,12 @@ namespace AzureTangyFunc
             _db = db;
         }
 
-        [FunctionName("UpdateStatusToCompletedAndSendEmail")]
-        public async Task Run([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer,
-            [SendGrid(ApiKey = "CustomSendGridKeyAppSettingName")] IAsyncCollector<SendGridMessage> messageCollector, ILogger log)
+        [Function("UpdateStatusToCompletedAndSendEmail")]
+        [SendGridOutput(ApiKey = "CustomSendGridKeyAppSettingName")]
+        public string Run([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer,
+            FunctionContext context)
         {
+            var log = context.GetLogger("UpdateStatusToCompletedAndSendEmail");
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             IEnumerable<SalesRequest> salesRequestFromDb = _db.SalesRequests.Where(u => u.Status == "Image Processed");
@@ -41,7 +42,7 @@ namespace AzureTangyFunc
             message.AddContent("text/html", $"Processing completed for {salesRequestFromDbCount} records");
             message.SetFrom(new EmailAddress("hello@hesam.com"));
             message.SetSubject("Azure Tangy Processing Successful");
-            await messageCollector.AddAsync(message);
+            return Newtonsoft.Json.JsonConvert.SerializeObject(message);
         }
     }
 }
