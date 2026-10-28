@@ -1,8 +1,7 @@
+using Microsoft.Azure.Functions.Worker;
 using System;
 using AzureTangyFunc.Data;
 using AzureTangyFunc.Models;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 
 namespace AzureTangyFunc
@@ -16,9 +15,10 @@ namespace AzureTangyFunc
             _db = db;
         }
 
-        [FunctionName("OnQueueTriggerUpdateDatabase")]
-        public void Run([QueueTrigger("SalesRequestInBound", Connection = "AzureWebJobsStorage")] SalesRequest myQueueItem, ILogger log)
+        [Function("OnQueueTriggerUpdateDatabase")]
+        public void Run([QueueTrigger("salesrequestinbound", Connection = "AzureWebJobsStorage")] SalesRequest myQueueItem, FunctionContext context)
         {
+            var log = context.GetLogger("OnQueueTriggerUpdateDatabase");
             log.LogInformation($"C# Queue trigger function processed: {myQueueItem}");
 
             myQueueItem.Status = "Submitted";
