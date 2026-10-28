@@ -2,6 +2,14 @@
 
 Educational .NET 10 web and Azure Functions samples for storage, triggers, image processing, email and caching.
 
+## Captured preview
+
+![Azure Fundamentals — observed local output](docs/screenshots/portfolio-poster.png)
+
+The existing ImageThumbnail.Resize runs locally: PNG 900×600 to 300×200; TIFF and input over 8 MiB are rejected. No Functions host or cloud resource starts.
+
+[Reproduce this capture and view the static image](docs/PORTFOLIO-PREVIEW.md)
+
 ## Sample map
 
 | Project | Focus | Target |
